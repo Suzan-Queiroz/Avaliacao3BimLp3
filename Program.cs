@@ -88,6 +88,106 @@ if (modelName == "Student")
 
             break;
         }
-    }
+
+         case "ListFormed":
+        {
+            if(studentRepository.GetAllFormed().Any())
+            {
+                Console.WriteLine("Lista de Estudantes");
+            
+                foreach (var student in studentRepository.GetAllFormed())
+                {   
+                    var formed = studentRepository.IfFormed(student.Former);
+                    Console.WriteLine($"{student.Registration}, {student.Name}, {student.City}, {formed}.");
+                }
+            }
+            else Console.WriteLine("Nenhum estudante cadastrado.");
+
+            break;
+            
+        }
+
+        case "ListByCity":
+        {   
+            var cityName = args[2];
+            if(studentRepository.GetAllStudentByCity(cityName).Any())
+            {   
+                Console.WriteLine("Lista de Estudantes");
     
+                foreach (var student in studentRepository.GetAllStudentByCity(cityName))
+                {   
+                    var formed = studentRepository.IfFormed(student.Former);
+                    Console.WriteLine($"{student.Registration}, {student.Name}, {student.City}, {formed}.");
+                }
+            }
+            else Console.WriteLine("Nenhum estudante cadastrado.");
+
+            break;
+            
+        }
+
+        case "ListByCities":
+        {   
+            var cities = new string[args.Length - 2];
+
+            for(int i = 2; i < args.Length; i++)
+            {
+                cities[i-2] = args[i];
+            }
+
+             if(studentRepository.GetAllByCities(cities).Any())
+            {   
+                Console.WriteLine("Lista de Estudantes");
+    
+                foreach (var student in studentRepository.GetAllByCities(cities))
+                {   
+                    var formed = studentRepository.IfFormed(student.Former);
+                    Console.WriteLine($"{student.Registration}, {student.Name}, {student.City}, {formed}.");
+                }
+            }
+            else Console.WriteLine("Nenhum estudante cadastrado.");
+
+            break;
+        }
+
+        case "Report":
+        {
+            if(args[2] == "CountByCities")
+            {
+                Console.WriteLine("Número de Estudantes");
+                if(studentRepository.CountByCities().Any())
+                {
+                    foreach (var student in studentRepository.CountByCities())
+                    {
+                        Console.WriteLine($"{student.AttributeName}, {student.StudentNumber}");       
+                    }
+                }
+                else Console.WriteLine($"Nenhum estudante cadastrado");
+            }
+
+            if(args[2] == "CountByFormed")
+            {   
+                Console.WriteLine("Número de Estudantes");
+                if(studentRepository.CountByFormed().Any())
+                {
+                    foreach (var student in studentRepository.CountByFormed())
+                    {
+                        var formed = student.AttributeName == "1" ? "Formados" : "Não formados";
+                        Console.WriteLine($"{formed}, {student.StudentNumber}");
+               
+                    }
+                }
+
+                else Console.WriteLine($"Nenhum estudante cadastrado");      
+            }
+
+            break;
+        }
+
+        default : {
+            Console.WriteLine("Comando inválido");
+            break;
+        }
+    }
 }
+else Console.WriteLine("Comando inválido");

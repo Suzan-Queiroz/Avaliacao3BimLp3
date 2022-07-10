@@ -49,12 +49,81 @@ class StudentRepository
         return students;
     }
 
+    public List<Student> GetAllFormed()
+    {
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+
+        var students = connection.Query<Student>(
+            "SELECT * FROM Students WHERE former = @Former", new {Former = true}).ToList();
+
+        return students;
+    }
+
+    public List<Student> GetAllStudentByCity(string city)
+    {
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        
+        var students = connection.Query<Student>(
+            "SELECT * FROM Students WHERE city LIKE @City", new{City = $"{city}%"}).ToList();
+
+        return students;
+
+    }
+
+      public List<Student> GetAllByCities(string[] cities)
+    {
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        
+        
+        var students = connection.Query<Student>(
+            "SELECT * FROM Students WHERE city IN @City", new{City = cities}).ToList();
+
+        return students;
+
+    }
+
+     public List<CountStudentGroupByAttribute> CountByFormed()
+    {
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        
+        var students = connection.Query<CountStudentGroupByAttribute>(
+            "SELECT former as AttributeName, COUNT(former) as StudentNumber FROM Students GROUP BY former").ToList();
+
+        return students;
+    }
+
+    public List<CountStudentGroupByAttribute> CountByCities()
+    {
+        using var connection = new SqliteConnection(_databaseConfig.ConnectionString);
+        
+        var students = connection.Query<CountStudentGroupByAttribute>(
+            "SELECT city as AttributeName, COUNT(city) as StudentNumber FROM Students GROUP BY city").ToList();
+
+        return students;
+    }
+
+
     public bool ExistsByRegistration(string registration)
     {   
         using (var connection = new SqliteConnection(_databaseConfig.ConnectionString))
         {
-            var result = connection.ExecuteScalar<Boolean>("SELECT count(registration) FROM Students WHERE registration = @Registration;", new{Registration = registration});
+            var result = connection.ExecuteScalar<Boolean>(
+                "SELECT count(registration) FROM Students WHERE registration = @Registration;", 
+                new{Registration = registration});
             return result;
         }
+    }
+
+    public string IfFormed(bool former)
+    {   
+        var formed = Convert.ToString(former);
+
+        if (formed == "True")
+        {
+            formed = "formado";
+        }
+        else formed = "não formado";
+
+        return formed;
     }
 }
